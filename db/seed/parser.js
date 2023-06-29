@@ -98,7 +98,7 @@ function printTheData(dataHolder) {
     return t;
 }
 
-fs.createReadStream("./topics.csv")
+fs.createReadStream("./db/data/topics.csv")
 .pipe(parse({ delimiter: ",", from_line: 2 }))
 .on("data", function (row) {
     dataHolder.appendData(row);
