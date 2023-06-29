@@ -1,0 +1,18 @@
+version: '3.6'
+
+services:
+  mongodb:
+    image: mongo:latest # Not specified but the latest is > V6 and this is required to support tree structure schemas
+    container_name: mongo-container
+    ports:
+      - 27017:27017
+    environment:
+      - MONGO_INITDB_DATABASE=pencil
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin
+    # volumes:
+    #   # seeding scripts
+    #   - ./mongo-entrypoint:/docker-entrypoint-initdb.d
+    #   # named volumes
+    #   - mongodb:/data/db
+    #   - mongoconfig:/data/configdb
