@@ -1,6 +1,6 @@
 const fs = require("fs");
 const { parse } = require("csv-parse");
-const { Topic } = require("../models/index");
+const { Topic, Question } = require("../models/index");
 
 class DataHolder {
     data;
@@ -135,7 +135,7 @@ function printTheData(dataHolder) {
     return t;
 }
 
-const runSeeder = async () => {
+const seedTopics = async () => {
     fs.createReadStream("./db/data/topics.csv")
     .pipe(parse({ delimiter: ",", from_line: 2 }))
     .on("data", function (row) {
@@ -145,6 +145,35 @@ const runSeeder = async () => {
         tree.printTree();
         await tree.seedDBWithTopicsData();
     });
+}
+
+const seedQuestions = async () => {
+    const questionsAnnotations = [];
+    fs.createReadStream("./db/data/questions.csv")
+    .pipe(parse({ delimiter: ",", from_line: 2 }))
+    .on("data", function (row) {
+        const questionAnnotation = [];
+        for(let i = 0 ; i < row.length; i++) {
+            if(row[i] !== '' && row[i] !== ' ' && row[i].length > 0) {
+                questionAnnotation.push(row[i]);
+            }
+        }
+        if(questionAnnotation.length > 1) {
+            questionsAnnotations.push(questionAnnotation);
+        }
+    }).on('finish', async function() {
+        for(let i = 0; i < questionsAnnotations.length; i++) {
+            let id = questionsAnnotations[i][0];
+            questionsAnnotations[i].shift();
+            let question = new Question({_id: id, annotations: questionsAnnotations[i]});
+            await question.save();
+        }
+    });
+}
+
+const runSeeder = async () => {
+    await seedTopics();
+    await seedQuestions();
 }
 
 module.exports = runSeeder
