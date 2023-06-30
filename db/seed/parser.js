@@ -95,10 +95,31 @@ class Tree {
     /**
      * Essential function to seed DB with our data. Considered as a starting point for
      * our application
+     * Using the BFS algorithm it would allow us to seed the database
      */
-    async seedDBWithData() {
+    async seedDBWithTopicsData() {
         await Topic.deleteMany();
-        
+        let iterator = this.root;
+        let queue = [];
+        for(let i = 0 ; i < iterator.children.length; i++) {
+            queue.push(
+                [iterator.children[i], null]
+            );
+        }
+        while(queue.length > 0) {
+            let item = queue[0];
+            queue.shift();
+            let newTopic = new Topic({name: item[0].val, children: []});
+            await newTopic.save();
+            if(item[1] !== null) {
+                let parent = item[1];
+                parent.children.addToSet(newTopic);
+                await parent.save();
+            }
+            for(let i = 0; i < item[0].children.length; i++) {
+                queue.push([item[0].children[i], newTopic]);
+            }
+        }
     }
 }
 
@@ -122,7 +143,7 @@ const runSeeder = async () => {
     }).on('finish', async function() {
         let tree = printTheData(dataHolder);
         tree.printTree();
-        await tree.seedDBWithData();
+        await tree.seedDBWithTopicsData();
     });
 }
 
