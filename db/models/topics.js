@@ -9,4 +9,7 @@ let TopicSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model('Topic', TopicSchema);
+
+const Topic = mongoose.model("Topic", TopicSchema);
+
+module.exports = { Topic };

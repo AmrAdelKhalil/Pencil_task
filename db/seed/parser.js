@@ -1,5 +1,6 @@
 const fs = require("fs");
 const { parse } = require("csv-parse");
+const { Topic } = require("../models/index");
 
 class DataHolder {
     data;
@@ -46,6 +47,10 @@ class Tree {
         this.root = new Node();
     }
 
+    /**
+     * Insert a single row of data into the tree
+     * @param {Array} values represents a uniqe path to a child node
+     */
     insert(values) {
         let iterator = this.root;
         for(let i = 0; i < values.length; i++) {
@@ -62,7 +67,10 @@ class Tree {
             }
         }
     }
-
+    
+    /**
+     * Used while testing the script against creating the tree data structure
+     */
     printTree() {
         let level = 0;
         let iterator = this.root;
@@ -82,7 +90,15 @@ class Tree {
             }
             final[item[1]].push(item[0].val);
         }
-        console.log(final);
+    }
+
+    /**
+     * Essential function to seed DB with our data. Considered as a starting point for
+     * our application
+     */
+    async seedDBWithData() {
+        await Topic.deleteMany();
+        
     }
 }
 
@@ -98,11 +114,16 @@ function printTheData(dataHolder) {
     return t;
 }
 
-fs.createReadStream("./db/data/topics.csv")
-.pipe(parse({ delimiter: ",", from_line: 2 }))
-.on("data", function (row) {
-    dataHolder.appendData(row);
-}).on('finish', function() {
-    let tree = printTheData(dataHolder);
-    tree.printTree();
-});
+const runSeeder = async () => {
+    fs.createReadStream("./db/data/topics.csv")
+    .pipe(parse({ delimiter: ",", from_line: 2 }))
+    .on("data", function (row) {
+        dataHolder.appendData(row);
+    }).on('finish', async function() {
+        let tree = printTheData(dataHolder);
+        tree.printTree();
+        await tree.seedDBWithData();
+    });
+}
+
+module.exports = runSeeder

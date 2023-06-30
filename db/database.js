@@ -10,12 +10,12 @@ class Database {
 
   _connect() {
     mongoose
-      .connect(`mongodb://${server}/${database}`)
+      .connect(`mongodb://admin:admin@localhost:27017/pencil`)
       .then(() => {
         console.log('Database connection successful');
       })
       .catch((err) => {
-        console.error('Database connection error');
+        console.error('Database connection error', err);
       });
   }
 }
