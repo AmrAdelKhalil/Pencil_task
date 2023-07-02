@@ -1,17 +1,15 @@
+const mongoose = require("mongoose");
+
+if (process.env.NODE_ENV !== 'test') {
+    mongoose.connect(
+        "mongodb://admin:admin@localhost:27017/pencil?authSource=admin"
+    );
+}
+
 const dataSeeder = require('../db/seed/parser')
-const { getQuestionsOfATopicSubTree } = require("./topics/index");
 
 const app = require('./app')
 const port = 8080
-
-app.get('/search', async (req, res) => {
-    let { q } = req.query;
-    let questions = [];
-    if(q !== undefined) {
-        questions = await getQuestionsOfATopicSubTree(q);
-    }
-    res.send(questions);
-})
 
 const run = async () => {
     try {

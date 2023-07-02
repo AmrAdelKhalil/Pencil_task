@@ -1,12 +1,16 @@
 const express = require('express')
-const mongoose = require("mongoose");
+
+const { getQuestionsOfATopicSubTree } = require("./topics/index");
 
 const app = express()
 
-if (process.env.NODE_ENV !== 'test') {
-    mongoose.connect(
-        "mongodb://admin:admin@localhost:27017/pencil?authSource=admin"
-    );
-}
+app.get('/search', async (req, res) => {
+    let { q } = req.query;
+    let questions = [];
+    if(q !== undefined) {
+        questions = await getQuestionsOfATopicSubTree(q);
+    }
+    res.json({ questions_ids: questions });
+})
 
 module.exports = app
