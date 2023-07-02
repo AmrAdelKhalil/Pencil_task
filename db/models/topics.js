@@ -7,6 +7,10 @@ let TopicSchema = new mongoose.Schema({
     type: [{type: ObjectId, ref: 'Topic'}],
     default: []
   },
+  questions: {
+    type: [{type: Number}],
+    default: []
+  }
 });
 
 

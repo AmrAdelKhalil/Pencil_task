@@ -1,6 +1,6 @@
 const fs = require("fs");
 const { parse } = require("csv-parse");
-const { Topic, Question } = require("../models/index");
+const { Topic } = require("../models/index");
 
 class DataHolder {
     data;
@@ -97,7 +97,7 @@ class Tree {
      * our application
      * Using the BFS algorithm it would allow us to seed the database
      */
-    async seedDBWithTopicsData() {
+    async seedDBWithTopicsData(topicToQuestionMap) {
         await Topic.deleteMany();
         let iterator = this.root;
         let queue = [];
@@ -109,7 +109,11 @@ class Tree {
         while(queue.length > 0) {
             let item = queue[0];
             queue.shift();
-            let newTopic = new Topic({name: item[0].val, children: []});
+            let newTopic = new Topic({
+                name: item[0].val,
+                children: [],
+                questions: (item[0].val in topicToQuestionMap) ? topicToQuestionMap[item[0].val] : []
+            });
             await newTopic.save();
             if(item[1] !== null) {
                 let parent = item[1];
@@ -135,7 +139,7 @@ function printTheData(dataHolder) {
     return t;
 }
 
-const seedTopics = async () => {
+const seedTopics = async (topicToQuestionMap) => {
     fs.createReadStream("./db/data/topics.csv")
     .pipe(parse({ delimiter: ",", from_line: 2 }))
     .on("data", function (row) {
@@ -143,11 +147,11 @@ const seedTopics = async () => {
     }).on('finish', async function() {
         let tree = printTheData(dataHolder);
         tree.printTree();
-        await tree.seedDBWithTopicsData();
+        await tree.seedDBWithTopicsData(topicToQuestionMap);
     });
 }
 
-const seedQuestions = async () => {
+const seedQuestions =  () => {
     const questionsAnnotations = [];
     fs.createReadStream("./db/data/questions.csv")
     .pipe(parse({ delimiter: ",", from_line: 2 }))
@@ -162,17 +166,26 @@ const seedQuestions = async () => {
             questionsAnnotations.push(questionAnnotation);
         }
     }).on('finish', async function() {
+        let topicToQuestionMap = {};
         for(let i = 0; i < questionsAnnotations.length; i++) {
             let id = questionsAnnotations[i][0];
+            if(id > 199) {
+                let a;
+            }
             questionsAnnotations[i].shift();
-            let question = new Question({_id: id, annotations: questionsAnnotations[i]});
-            await question.save();
+            for(let j = 0; j < questionsAnnotations[i].length; j++) {
+                if(questionsAnnotations[i][j] in topicToQuestionMap) {
+                    topicToQuestionMap[questionsAnnotations[i][j]].push(id);
+                } else {
+                    topicToQuestionMap[questionsAnnotations[i][j]] = [id];
+                }
+            }
         }
+        await seedTopics(topicToQuestionMap);
     });
 }
 
 const runSeeder = async () => {
-    await seedTopics();
     await seedQuestions();
 }
 
