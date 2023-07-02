@@ -1,9 +1,7 @@
-const express = require('express')
-const mongoose = require("mongoose");
 const dataSeeder = require('../db/seed/parser')
 const { getQuestionsOfATopicSubTree } = require("./topics/index");
 
-const app = express()
+const app = require('./app')
 const port = 8080
 
 app.get('/search', async (req, res) => {
@@ -17,12 +15,6 @@ app.get('/search', async (req, res) => {
 
 const run = async () => {
     try {
-
-        // Set DB connection
-        await mongoose.connect(
-            "mongodb://admin:admin@localhost:27017/pencil?authSource=admin"
-        );
-
         // Seed our database
         await dataSeeder();
 
