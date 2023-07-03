@@ -1,8 +1,12 @@
 const mongoose = require("mongoose");
 
-if (process.env.NODE_ENV !== 'test') {
+if (process.env.NODE_ENV === 'test') {
     mongoose.connect(
         "mongodb://admin:admin@localhost:27017/pencil?authSource=admin"
+    );
+} else {
+    mongoose.connect(
+        `mongodb://${process.env.DATABASE_USERNAME}:${process.env.DATABASE_PASSWORD}@mongodb:27017/${process.env.DATABASE_NAME}?authSource=admin`
     );
 }
 
