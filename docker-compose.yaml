@@ -13,6 +13,7 @@ services:
       - DATABASE_NAME=pencil
       - DATABASE_USERNAME=admin
       - DATABASE_PASSWORD=admin
+      - DATABASE_URL=mongodb:27017
   mongodb:
     image: mongo:latest # Not specified but the latest is > V6 and this is required to support tree structure schemas
     container_name: mongo-container

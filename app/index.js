@@ -6,7 +6,7 @@ if (process.env.NODE_ENV === 'test') {
     );
 } else {
     mongoose.connect(
-        `mongodb://${process.env.DATABASE_USERNAME}:${process.env.DATABASE_PASSWORD}@mongodb:27017/${process.env.DATABASE_NAME}?authSource=admin`
+        `mongodb://${process.env.DATABASE_USERNAME}:${process.env.DATABASE_PASSWORD}@${process.env.DATABASE_URL}/${process.env.DATABASE_NAME}?authSource=admin`
     );
 }
 
