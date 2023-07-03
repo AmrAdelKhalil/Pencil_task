@@ -8,11 +8,11 @@ if (process.env.NODE_ENV === 'test') {
     mongoose.connect(
         `mongodb://${process.env.DATABASE_USERNAME}:${process.env.DATABASE_PASSWORD}@${process.env.DATABASE_URL}/${process.env.DATABASE_NAME}?authSource=admin`
     );
-}
+} 
 else {
-    mongoose.connect(
-        "mongodb+srv://${process.env.DATABASE_USERNAME:${process.env.DATABASE_PASSWORD}@${process.env.DATABASE_URL}/${process.env.DATABASE_NAME}?retryWrites=true&w=majority"
-    );
+    console.log("Testing something in production");
+    console.log(process.env.DB_PRODUCTION_URL);
+    mongoose.connect(process.env.DB_PRODUCTION_URL);
 }
 
 const dataSeeder = require('../db/seed/parser')
