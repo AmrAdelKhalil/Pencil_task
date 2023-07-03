@@ -10,8 +10,6 @@ if (process.env.NODE_ENV === 'test') {
     );
 } 
 else {
-    console.log("Testing something in production");
-    console.log(process.env.DB_PRODUCTION_URL);
     mongoose.connect(process.env.DB_PRODUCTION_URL);
 }
 
